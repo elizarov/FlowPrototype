@@ -1,4 +1,4 @@
-package concurrent
+package concurrent_runtime
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*

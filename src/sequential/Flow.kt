@@ -1,7 +1,5 @@
 package sequential
 
-import kotlinx.coroutines.*
-
 interface Flow<T> {
     suspend fun consumeEach(consumer: FlowConsumer<T>)
 }
@@ -78,6 +76,9 @@ suspend fun <T, C : MutableCollection<in T>> Flow<T>.toCollection(destination: C
 suspend fun <T> Flow<T>.toList(): List<T> =
     toCollection(ArrayList<T>())
 
+suspend fun <T> Flow<T>.toSet(): Set<T> =
+    toCollection(LinkedHashSet<T>())
+
 suspend inline fun <S, T : S> Flow<T>.reduce(crossinline operation: suspend (acc: S, value: T) -> S): S {
     var found = false
     var accumulator: S? = null
@@ -130,16 +131,13 @@ suspend inline fun <T> Flow<T>.first(crossinline predicate: suspend (T) -> Boole
     return result as T
 }
 
-// ------------ Concurrency ------------
 
-// todo:
-suspend fun <T> Flow<T>.concurrent(concurrency: Int, block: Flow<T>.() -> Flow<T>) =
-    coroutineScope {
-        repeat(concurrency) {
-            launch {
-                
-            }
+
+// ----
+
+suspend fun main() {
+    (1..10).asFlow()
+        .consumeEach {
+            println(it)
         }
-    }
-
-
+}
