@@ -1,3 +1,5 @@
+package concurrent
+
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
 
@@ -121,7 +123,8 @@ internal abstract class TransformSinkFlow<S, T>(
 
 inline fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Flow<T> =
     object : TransformSinkFlow<T, T>(this@filter) {
-        override fun transformSink(sink: FlowSink<T>): FlowSink<T> = object : FlowSink<T> {
+        override fun transformSink(sink: FlowSink<T>): FlowSink<T> = object :
+            FlowSink<T> {
             override suspend fun process(element: T) {
                 if (predicate(element)) {
                     sink.process(element)
@@ -132,7 +135,8 @@ inline fun <T> Flow<T>.filter(crossinline predicate: suspend (T) -> Boolean): Fl
 
 inline fun <S, T> Flow<S>.map(crossinline transform: suspend (S) -> T): Flow<T> =
     object : TransformSinkFlow<S, T>(this@map) {
-        override fun transformSink(sink: FlowSink<T>): FlowSink<S> = object : FlowSink<S> {
+        override fun transformSink(sink: FlowSink<T>): FlowSink<S> = object :
+            FlowSink<S> {
             override suspend fun process(element: S) {
                 sink.process(transform(element))
             }
@@ -210,7 +214,7 @@ suspend fun <T> Flow<T>.toList(): List<T> {
 
 private enum class Symbol { NOT_RECEIVED }
 
-private object FlowCancelled : CancellationException("Flow is cancelled") {
+private object FlowCancelled : CancellationException("concurrent.Flow is cancelled") {
     init {
         stackTrace = arrayOf()
     }
